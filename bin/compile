@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Ruby version
+RUBY_VERSION="2.7.6"
+echo "Installing Ruby $RUBY_VERSION"
+
+# Download Ruby 2.7.6 and install
+curl -L https://cache.ruby-lang.org/pub/ruby/2.7/ruby-$RUBY_VERSION.tar.gz | tar xz
+cd ruby-$RUBY_VERSION
+./configure --prefix=/usr/local
+make
+sudo make install
+
+# Continue with the rest of the build process
