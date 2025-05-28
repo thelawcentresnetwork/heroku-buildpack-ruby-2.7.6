@@ -9,6 +9,9 @@ ENV_DIR="$3"
 RUBY_VERSION="2.7.6"
 INSTALL_DIR="$BUILD_DIR/.heroku/ruby"
 
+echo "👉 Cleaning up any old Ruby build"
+rm -rf "$BUILD_DIR"/ruby-"$RUBY_VERSION"
+
 echo "👉 Installing Ruby $RUBY_VERSION into $INSTALL_DIR"
 
 # Download & extract
@@ -16,7 +19,12 @@ curl -L "https://cache.ruby-lang.org/pub/ruby/2.7/ruby-$RUBY_VERSION.tar.gz" | t
 cd "ruby-$RUBY_VERSION"
 
 # Configure/install into the build dir, not /
-./configure --prefix="$INSTALL_DIR"
+./configure \
+  --prefix="$INSTALL_DIR" \
+  --with-openssl-dir=/usr \
+  --with-readline-dir=/usr \
+  --with-zlib-dir=/usrmake -j$(nproc)
+
 make -j$(nproc)
 make install
 
