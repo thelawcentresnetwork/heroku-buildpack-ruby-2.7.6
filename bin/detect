@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Simple detection script
+# This should return 0 if Ruby is present in the app
+if [ -f "Gemfile" ]; then
+  echo "Ruby buildpack detected"
+  exit 0
+else
+  echo "No Gemfile found, skipping Ruby buildpack"
+  exit 1
+fi
