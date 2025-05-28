@@ -1,14 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-# Ruby version
 RUBY_VERSION="2.7.6"
 echo "Installing Ruby $RUBY_VERSION"
 
-# Download Ruby 2.7.6 and install
+# unpack
 curl -L https://cache.ruby-lang.org/pub/ruby/2.7/ruby-$RUBY_VERSION.tar.gz | tar xz
 cd ruby-$RUBY_VERSION
-./configure --prefix=/usr/local
-make
-sudo make install
 
-# Continue with the rest of the build process
+# configure to install into $BUILD_DIR/.heroku/ruby
+./configure --prefix="$BUILD_DIR/.heroku/ruby"
+make -j$(nproc)
+make install
+
+# make sure that Ruby bin is on the PATH for the next buildpacks
+echo 'export PATH=$HOME/.heroku/ruby/bin:$PATH' > "$BUILD_DIR"/.profile.d/ruby.sh
