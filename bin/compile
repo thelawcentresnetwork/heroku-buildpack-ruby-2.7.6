@@ -1,17 +1,29 @@
 #!/usr/bin/env bash
 set -e
 
+# Heroku passes these in
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+ENV_DIR="$3"
+
 RUBY_VERSION="2.7.6"
-echo "Installing Ruby $RUBY_VERSION"
+INSTALL_DIR="$BUILD_DIR/.heroku/ruby"
 
-# unpack
-curl -L https://cache.ruby-lang.org/pub/ruby/2.7/ruby-$RUBY_VERSION.tar.gz | tar xz
-cd ruby-$RUBY_VERSION
+echo "👉 Installing Ruby $RUBY_VERSION into $INSTALL_DIR"
 
-# configure to install into $BUILD_DIR/.heroku/ruby
-./configure --prefix="$BUILD_DIR/.heroku/ruby"
+# Download & extract
+curl -L "https://cache.ruby-lang.org/pub/ruby/2.7/ruby-$RUBY_VERSION.tar.gz" | tar xz
+cd "ruby-$RUBY_VERSION"
+
+# Configure/install into the build dir, not /
+./configure --prefix="$INSTALL_DIR"
 make -j$(nproc)
 make install
 
-# make sure that Ruby bin is on the PATH for the next buildpacks
-echo 'export PATH=$HOME/.heroku/ruby/bin:$PATH' > "$BUILD_DIR"/.profile.d/ruby.sh
+# Ensure the Ruby bin folder is on PATH for subsequent buildpacks
+mkdir -p "$BUILD_DIR"/.profile.d
+cat <<'EOF' > "$BUILD_DIR"/.profile.d/ruby.sh
+export PATH="$HOME/.heroku/ruby/bin:$PATH"
+EOF
+
+echo "✅ Ruby $RUBY_VERSION installed"
