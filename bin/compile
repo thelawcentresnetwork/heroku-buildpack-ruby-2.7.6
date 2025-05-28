@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Heroku passes these in
 BUILD_DIR="$1"
 CACHE_DIR="$2"
 ENV_DIR="$3"
@@ -12,23 +11,24 @@ INSTALL_DIR="$BUILD_DIR/.heroku/ruby"
 echo "👉 Cleaning up any old Ruby build"
 rm -rf "$BUILD_DIR"/ruby-"$RUBY_VERSION"
 
-echo "👉 Installing Ruby $RUBY_VERSION into $INSTALL_DIR"
-
-# Download & extract
+echo "👉 Downloading Ruby $RUBY_VERSION"
 curl -L "https://cache.ruby-lang.org/pub/ruby/2.7/ruby-$RUBY_VERSION.tar.gz" | tar xz
 cd "ruby-$RUBY_VERSION"
 
-# Configure/install into the build dir, not /
+echo "👉 Configuring Ruby (with OpenSSL, readline & zlib)"
 ./configure \
   --prefix="$INSTALL_DIR" \
   --with-openssl-dir=/usr \
   --with-readline-dir=/usr \
-  --with-zlib-dir=/usrmake -j$(nproc)
+  --with-zlib-dir=/usr
 
+echo "👉 Building Ruby"
 make -j$(nproc)
+
+echo "👉 Installing Ruby"
 make install
 
-# Ensure the Ruby bin folder is on PATH for subsequent buildpacks
+echo "👉 Setting up PATH for later buildpacks"
 mkdir -p "$BUILD_DIR"/.profile.d
 cat <<'EOF' > "$BUILD_DIR"/.profile.d/ruby.sh
 export PATH="$HOME/.heroku/ruby/bin:$PATH"
