@@ -12,10 +12,6 @@ echo "👀  DEBUG: Gemfile present? ->"
 if [ -f Gemfile ]; then echo "YES"; else echo "NO"; fi
 
 # now do your normal detection (or force it to true if you want)
-if [ -f Gemfile ]; then
-  echo "✅ Ruby buildpack detected"
-  exit 0
-else
-  echo "❌ No Gemfile, skipping"
-  exit 1
+echo "👉 Forcing Ruby buildpack on Heroku-22"
+exit 0
 fi
