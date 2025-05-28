@@ -1,9 +1,21 @@
-#!/bin/bash
-echo "CUSTOM detect v3.0"
-if [[ -f Gemfile ]]; then
-  echo "CUSTOM detect v3.0 if/then"
+#!/usr/bin/env bash
+set -x   # turn on shell tracing so you see every command
+
+echo "👀  DEBUG: running bin/detect from $(pwd)"
+echo "👀  DEBUG: buildpack root contents:"
+ls -R .  
+
+echo "👀  DEBUG: bin directory contents:"
+ls -l bin
+
+echo "👀  DEBUG: Gemfile present? ->"
+if [ -f Gemfile ]; then echo "YES"; else echo "NO"; fi
+
+# now do your normal detection (or force it to true if you want)
+if [ -f Gemfile ]; then
+  echo "✅ Ruby buildpack detected"
   exit 0
 else
-    echo "CUSTOM detect v3.0 else"
+  echo "❌ No Gemfile, skipping"
   exit 1
 fi
